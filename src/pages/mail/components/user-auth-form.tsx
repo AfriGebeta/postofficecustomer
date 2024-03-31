@@ -1,6 +1,6 @@
 import { HTMLAttributes, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import qr from "../../../assets/qr.svg";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,6 +20,16 @@ import { PasswordInput } from "@/components/custom/password-input";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/authProvider";
 import axios from "axios";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -39,8 +49,7 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { login, user } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,65 +66,64 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(data);
 
-    try{
+    try {
       const res = await axios.get(import.meta.env.VITE_API_URL + "/profile");
 
       if (res.data) {
-        res.data.find(async (toUser: any) => {
-          if (toUser.phoneNumber === data.phone) {
-            const res = await axios.post(
-              import.meta.env.VITE_API_URL + "/package",
-              {
-                location_history: {},
-                specification: {
-                  description: data.description,
-                  killo: data.killo,
-                  type: data.type,
-                  city: data.city,
-                  firstName: data.firstName,
-                  lastName: data.lastName,
-                },
-                type: data.type,
-                fragile: false,
-                sentFromId: user?.id,
-                sentToId: toUser.id,
-              }
-            );
-
-            if (res.data) {
-              setIsLoading(false);
-              toast({
-                title: "Package sent successfully!",
-                description: "You have successfully sent the package.",
-              });
-            } else {
-              setIsLoading(false);
-              toast({
-                title: "Failed to send package!",
-                description: `failed with error ${res.data}`,
-              });
-            }
+        const filter = res.data.filter((user: any) => {
+          if (user.phoneNumber === data.phone) {
+            return user;
           }
         });
-      }
-      else {
+
+        const result = await axios.post(
+          import.meta.env.VITE_API_URL + "/package",
+          {
+            location_history: {},
+            specification: {
+              description: data.description,
+              killo: data.killo,
+              type: data.type,
+              city: data.city,
+              firstName: data.firstName,
+              lastName: data.lastName,
+            },
+            type: data.type,
+            fragile: false,
+            sentFromId: user?.id,
+            sentToId: filter[0].id,
+          }
+        );
+
+        if (result.data) {
+          setIsLoading(false);
+          toast({
+            title: "Package sent successfully!",
+            description: "You have successfully sent the package.",
+          });
+        } else {
+          setIsLoading(false);
+          toast({
+            title: "Failed to send package!",
+            description: `failed with error ${result.data}`,
+          });
+        }
+      } else {
+        console.log(res.data, "1");
         setIsLoading(false);
         toast({
           title: "Failed to send package!",
           description: `failed with error ${res.data}`,
         });
-    }
-    }catch(err: any) {
+      }
+    } catch (err: any) {
       setIsLoading(false);
       toast({
         title: "Failed to send package!",
         description: `failed with error ${err.message}`,
       });
-
     }
-      
   }
 
   return (
@@ -234,10 +242,30 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 </FormItem>
               )}
             />
-
-            <Button className="mt-2" loading={isLoading}>
-              Send
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+              <Button type="submit" className="mt-2" loading={isLoading}>
+                    Send
+                  </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit profile</DialogTitle>
+                  <DialogDescription>
+                    Your package is queued and ready to be sent. Please scan the
+                    QR code to complete the transaction with Telebirr.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-row justify-center items-center">
+                  <img src={qr} alt="qr" className="w-40 h-40" />
+                </div>
+                {/* <DialogFooter>
+                  <Button className="mt-2" loading={isLoading}>
+                    close
+                  </Button>
+                </DialogFooter> */}
+              </DialogContent>
+            </Dialog>
           </div>
         </form>
       </Form>
