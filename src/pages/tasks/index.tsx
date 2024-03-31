@@ -3,10 +3,32 @@ import ThemeSwitch from '@/components/theme-switch'
 import { UserNav } from '@/components/user-nav'
 import { Layout, LayoutBody, LayoutHeader } from '@/components/custom/layout'
 import { DataTable } from './components/data-table'
-import { columns, packageColumn } from './components/columns'
-import { tasks } from './data/tasks'
+import { columns } from './components/columns'
+// import { tasks } from './data/tasks'
+import { useAuth } from '@/hooks/authProvider'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { Task } from './data/schema'
 
 export default function Tasks() {
+  const { user } = useAuth()
+  const [ tasks, setTasks ] = useState<Task[]>([])
+  const handleTaskFetch = async () => {
+    const ftechtasks = await axios(import.meta.env.VITE_API_URL + '/package').then(res => {
+      return res.data as Task[]
+    }).catch(err => {
+      console.error(err)
+      return []
+    });
+    
+    console.log(ftechtasks)
+    setTasks(ftechtasks)
+  }
+
+  useEffect(() => {
+    handleTaskFetch()
+  }, [])
+  const availableTasks = tasks.filter((task) => (task.status === 'waiting' || task.status === 'en-route') || task.driverAssigned === undefined)
   return (
     <Layout>
       {/* ===== Top Heading ===== */}
@@ -21,14 +43,14 @@ export default function Tasks() {
       <LayoutBody className='flex flex-col' fixedHeight>
         <div className='mb-2 flex items-center justify-between space-y-2'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>Welcome back!</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>Welcome back! {user?.firstName}</h2>
             <p className='text-muted-foreground'>
-              Here&apos;s a list of your tasks for this month!
+              Here&apos;s a list of actions that have to be done.
             </p>
           </div>
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DataTable data={tasks} columns={packageColumn} />
+          <DataTable data={availableTasks} columns={columns} />
         </div>
       </LayoutBody>
     </Layout>

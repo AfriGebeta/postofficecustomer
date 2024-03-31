@@ -21,23 +21,23 @@ const RouterIndex = () => {
         setUser(localUser)
       }
     }
-    // if (localUser) {
-    //   switch (localUser?.role) {
-    //     case PostalUserRole.master:
-    //       navigator('/dashboard')
-    //       break
-    //     case PostalUserRole.Limd_yalew:
-    //       navigator('/mail')
-    //       break
-    //     case PostalUserRole.basic:
-    //       navigator('/403')
-    //       break
-    //     default:
-    //       navigator('/welcome')
-    //   }
-    // } else {
-    //   navigator('/sign-in')
-    // }
+    if (localUser) {
+      switch (localUser?.role) {
+        case PostalUserRole.master:
+          navigator('/dashboard')
+          break
+        case PostalUserRole.Limd_yalew:
+          navigator('/mail')
+          break
+        case PostalUserRole.basic:
+          navigator('/welcome')
+          break
+        default:
+          navigator('/welcome')
+      }
+    } else {
+      navigator('/sign-in')
+    }
   }, [user])
   console.log('User: isidensdcd', user)
   return (

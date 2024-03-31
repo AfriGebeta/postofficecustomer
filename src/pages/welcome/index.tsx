@@ -1,9 +1,23 @@
 import React from 'react'
 import { IconPlanet } from '@tabler/icons-react'
 import postOfficeLogo from '../../assets/ethio_post_logo.svg'
+import { Layout, LayoutHeader } from '@/components/custom/layout'
+import ThemeSwitch from '@/components/theme-switch'
+import { TopNav } from '@/components/top-nav'
+import { UserNav } from '@/components/user-nav'
+import { Search } from '@/components/search'
 
 const WelcomePage: React.FC = () => {
   return (
+    <Layout>
+      {/* ===== Top Heading ===== */}
+      <LayoutHeader>
+        <div className='ml-auto flex items-center space-x-4'>
+          <Search />
+          <ThemeSwitch />
+          <UserNav />
+        </div>
+      </LayoutHeader>
     <div className='h-svh'>
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         <img
@@ -19,6 +33,7 @@ const WelcomePage: React.FC = () => {
         </p>
       </div>
     </div>
+    </Layout>
   )
 }
 

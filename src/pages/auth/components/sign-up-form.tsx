@@ -2,6 +2,7 @@ import { HTMLAttributes, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
+import axios from 'axios'
 import { z } from 'zod'
 import {
   Form,
@@ -15,6 +16,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/button'
 import { PasswordInput } from '@/components/custom/password-input'
 import { cn } from '@/lib/utils'
+import { toast } from '@/components/ui/use-toast'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/authProvider'
 
 interface SignUpFormProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -29,8 +33,8 @@ const formSchema = z
       .min(1, {
         message: 'Please enter your password',
       })
-      .min(1, {
-        message: 'Password must be at least 7 characters long',
+      .min(3, {
+        message: 'Password must be at least 3 characters long',
       }),
     confirmPassword: z.string(),
   })
@@ -41,6 +45,9 @@ const formSchema = z
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const { register } = useAuth()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,6 +57,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       lastName: '',
       password: '',
       confirmPassword: '',
+
     },
   })
 
@@ -57,10 +65,23 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     setIsLoading(true)
     console.log(data)
 
-    setTimeout(() => {
+    register(data).then((res: any) => {
+      console.log(res)
       setIsLoading(false)
-    }, 3000)
-  }
+      toast({
+        title: 'Signed up successfully!',
+        description: 'You have successfully signed up to your account.',
+      })
+      navigate('/')
+    }).catch((err: { message: any }) => {
+      setIsLoading(false)
+      toast({
+        title: 'Failed to signed up!',
+        description:
+          `failed with error ${err.message}`,
+      })
+    });
+  };
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
