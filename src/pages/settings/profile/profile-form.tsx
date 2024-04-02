@@ -62,11 +62,10 @@ import {
 } from 'tw-elements-react'
 import { IconPhone } from '@tabler/icons-react'
 
-interface RecenterControlProps {
-  onClick: () => void;
+ interface RecenterButtonProps {
+  newLocation: any;
  }
-
- const RecenterButton = ({ newLocation }) => {
+ const RecenterButton = ({ newLocation } : RecenterButtonProps) => {
   const map = useMap();
  
   const recenterMap = () => {
