@@ -12,6 +12,8 @@ import { toast } from '@/components/ui/use-toast'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { names } from '../data/tasks'
+import { Dialog, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
+import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog'
 
 export const columns: ColumnDef<Task>[] = [
   {
@@ -54,13 +56,14 @@ export const columns: ColumnDef<Task>[] = [
     ),
     cell: ({ row }) => {
 
-  
+
       return (
-      
-      <div className='flex items-center'>
-        <span>{row.getValue('type')}</span>
-      </div>
-    )},
+
+        <div className='flex items-center'>
+          <span>{row.getValue('type')}</span>
+        </div>
+      )
+    },
   },
 
   /*
@@ -116,16 +119,18 @@ export const columns: ColumnDef<Task>[] = [
         return user
       }
       useEffect(() => {
-        const from = getUserById(row.original.sentFromId).then(user => {
+        getUserById(row.original.sentFromId).then(user => {
           setFrom(user)
         })
-      });
+      }, []);
       return (
-        <div className='flex space-x-2'>
-          <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
-            {from?.firstName} {from?.lastName}
-          </span>
-        </div>
+        // <div className='flex space-x-2'>
+        // <span className='max-w-32 truncate font-medium sm:max-w-72 md:max-w-[31rem]'>
+        <>
+          {from?.firstName} {from?.lastName}
+        </>
+        // </span>
+        // </div>
       )
     },
   },
@@ -181,12 +186,41 @@ export const columns: ColumnDef<Task>[] = [
         <>
           {driver ? (
             <div className='flex flex-row items-center'>
-              <img
-                src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${driver}`}
-                alt={driver}
-                className='h-8 w-8 rounded-full'
-              />
-              <span className='ml-2'>{driver}</span>
+                <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost">
+                <img
+                  src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${driver}`}
+                  alt={driver}
+                  className='h-8 w-8 rounded-full'
+                />
+                <span className='ml-2'>{driver}</span>
+                </Button>
+              </DialogTrigger>
+                <DialogTrigger asChild>
+
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Driver Info</DialogTitle>
+                    
+                        <div className='flex flex-col justify-center items-start'>
+                          <p>
+                            name: {names[Math.floor(Math.random() * names.length)]}
+                          </p>
+                          <p>
+                            phone: +251 9{Math.floor(Math.random() * 1000000)}
+                          </p>
+                        </div>
+                  </DialogHeader>
+
+                  {/* <DialogFooter>
+                  <Button className="mt-2" loading={isLoading}>
+                    close
+                  </Button>
+                </DialogFooter> */}
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
             // <Button
@@ -196,9 +230,9 @@ export const columns: ColumnDef<Task>[] = [
             // >
             //   Assign
             // </Button>
-            <p>
+            <Button variant="ghost">
               Unaasigned
-            </p>
+            </Button>
           )}
         </>
       )
