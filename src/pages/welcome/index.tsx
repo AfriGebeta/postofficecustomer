@@ -18,7 +18,7 @@ const WelcomePage: React.FC = () => {
           <UserNav />
         </div>
       </LayoutHeader>
-    <div className='h-svh'>
+    <div >
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         <img
           src={postOfficeLogo}
@@ -31,6 +31,7 @@ const WelcomePage: React.FC = () => {
           Welcome back to your virtual PO Box! We're delighted to see you again
           and ready to assist with all your mailing needs. <br />
         </p>
+        <Search />
       </div>
     </div>
     </Layout>
