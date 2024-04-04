@@ -10,7 +10,7 @@ import { Task } from '../data/schema'
 import { Button } from '@/components/custom/button'
 import { toast } from '@/components/ui/use-toast'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { names } from '../data/tasks'
 import { Dialog, DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
 import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog'
@@ -41,11 +41,11 @@ export const columns: ColumnDef<Task>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'id',
+    accessorKey: 'trackingNumber',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Id' />
+      <DataTableColumnHeader column={column} title='trackingNumber' />
     ),
-    cell: ({ row }) => <div className='w-[80px]'>{row.getValue('id')}</div>,
+    cell: ({ row }) => <div className='w-[80px]'>{row.getValue('trackingNumber')}</div>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -109,7 +109,7 @@ export const columns: ColumnDef<Task>[] = [
     ),
     cell: ({ row }) => {
       const [from, setFrom] = useState<any>(null)
-      const getUserById = async (id: string) => {
+      const getUserById = useMemo(() => async (id: string) => {
         const user = await axios(import.meta.env.VITE_API_URL + '/profile?id=' + id).then(res => {
           return res.data
         }).catch(err => {
@@ -117,7 +117,7 @@ export const columns: ColumnDef<Task>[] = [
           return null
         })
         return user
-      }
+      }, []);
       useEffect(() => {
         getUserById(row.original.sentFromId).then(user => {
           setFrom(user)

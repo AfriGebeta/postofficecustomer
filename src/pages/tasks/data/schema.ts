@@ -12,6 +12,7 @@ export const taskSchema = z.object({
   fragile: z.boolean().optional(),
   sentFromId: z.string(),
   sentToId: z.string(),
+  trackingNumber: z.string(),
 })
 
 export enum TaskCategory {

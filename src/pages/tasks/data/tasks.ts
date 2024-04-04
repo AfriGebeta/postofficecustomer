@@ -147,5 +147,8 @@ tasks.forEach((task, index) => {
   if (index % 3 === 0) {
     task.driverAssigned = names[Math.floor(Math.random() * names.length)]
   }
+  // assign a random tracking number 5 digitss
+
+  task.trackingNumber = "1Z9R5W90P22" + Math.floor(Math.random() * 100000).toString()
 })
 

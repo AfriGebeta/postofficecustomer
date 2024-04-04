@@ -22,6 +22,9 @@ export default function Tasks() {
     });
     
     console.log(ftechtasks)
+    ftechtasks.forEach(task => {
+      task.trackingNumber = "1Z9R5W90P22" + Math.floor(Math.random() * 100000).toString()
+    });
     setTasks(ftechtasks)
   }
 

@@ -49,6 +49,7 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState(Math.floor(Math.random() * 100000));
   const { user } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -88,6 +89,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               city: data.city,
               firstName: data.firstName,
               lastName: data.lastName,
+              trackingNumber: trackingNumber,
             },
             type: data.type,
             fragile: false,
@@ -252,7 +254,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 <DialogHeader>
                   <DialogTitle>Edit profile</DialogTitle>
                   <DialogDescription>
-                    Your package is queued and ready to be sent. Please scan the
+                    Your package is queued and ready to be sent. Your tracking number is <em className="font-bold text-black">{trackingNumber}</em> . Please scan the
                     QR code to complete the transaction with Telebirr.
                   </DialogDescription>
                 </DialogHeader>
