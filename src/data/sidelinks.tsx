@@ -42,13 +42,13 @@ export const sidelinks: SideLink[] = [
   {
     title: 'Sent package',
     label: '3',
-    href: '/tasks',
+    href: '/outgoing',
     icon: <IconChecklist size={18} />,
   },
   {
     title: 'Incoming package',
     label: '3',
-    href: '/tasks',
+    href: '/incoming',
     icon: <IconChecklist size={18} />,
   },
   {

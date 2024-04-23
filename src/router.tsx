@@ -71,15 +71,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'incoming',
-        lazy: async () => ({
-          Component: (await import('./pages/tasks')).default,
-        }),
+        lazy: async () => {
+          const AppShell = await import('./pages/tasks');
+          const Component = AppShell.default;
+          return { Component: (props) => <Component {...props} filter='toMe'/> };
+        },
       },
       {
         path: 'outgoing',
-        lazy: async () => ({
-          Component: (await import('./pages/tasks')).default,
-        }),
+        lazy: async () => {
+          const AppShell = await import('./pages/tasks');
+          const Component = AppShell.default;
+          return { Component: (props) => <Component {...props} filter='mine'/> };
+        },
       },
       {
         path: 'history',

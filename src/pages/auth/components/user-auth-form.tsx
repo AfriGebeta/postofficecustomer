@@ -60,7 +60,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       // handle login
       login(data.phone, data.password)
         .then((user) => {
-          console.log('Logged in')
+          console.log('Logged in', { user })
           toast({
             title: 'Logged in successfully!',
             description: 'You have successfully logged in to your account.',

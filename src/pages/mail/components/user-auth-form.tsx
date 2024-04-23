@@ -1,3 +1,13 @@
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar"
+import { IconCalendar, IconClock } from "@tabler/icons-react";
+import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
 import { HTMLAttributes, useState } from "react";
 import { useForm } from "react-hook-form";
 import qr from "../../../assets/qr.svg";
@@ -24,14 +34,14 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import React from "react";
 import { Label } from "@/components/ui/label";
 
-interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> {}
+interface UserAuthFormProps extends HTMLAttributes<HTMLDivElement> { }
 
 const formSchema = z.object({
   phone: z
@@ -50,7 +60,13 @@ const formSchema = z.object({
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState(Math.floor(Math.random() * 100000));
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
+  const [time , setTime] = React.useState<string>("")
   const { user } = useAuth();
+
+  const setSendTime = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTime(e.target.value)
+  }
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -73,10 +89,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
       if (res.data) {
         const filter = res.data.filter((user: any) => {
-          if (user.phoneNumber === data.phone) {
+          if (user.phoneNumber.toString() === data.phone) {
             return user;
           }
         });
+
+        console.log("user", user)
+
+        if(!filter.length) {
+          setIsLoading(false);
+          toast({
+            title: "Failed to send package!",
+            description: `No user found with phone number ${data.phone}`,
+          });
+          return;
+        }
 
         const result = await axios.post(
           import.meta.env.VITE_API_URL + "/package",
@@ -90,6 +117,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               firstName: data.firstName,
               lastName: data.lastName,
               trackingNumber: trackingNumber,
+              time: time.toString(),
+              date: date?.toString(),
             },
             type: data.type,
             fragile: false,
@@ -244,11 +273,43 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 </FormItem>
               )}
             />
+
+            <div className="flex flex-row gap-2 items-center justify-start">
+              <Label>Send date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[280px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <IconCalendar className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              
+                  <div className="flex items-center space-x-2">
+                    <div className="grid w-full items-center gap-1.5">
+                      <Input onChange={setSendTime} aria-label="Choose time" className="w-full" id="time" type="time" />
+                    </div>
+                  </div>
+            </div>
             <Dialog>
               <DialogTrigger asChild>
-              <Button type="submit" className="mt-2" loading={isLoading}>
-                    Send
-                  </Button>
+                <Button type="submit" className="mt-2" loading={isLoading}>
+                  Send
+                </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>

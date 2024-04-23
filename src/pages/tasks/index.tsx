@@ -10,21 +10,25 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Task } from './data/schema'
 
-export default function Tasks() {
+type filters = "mine" | "toMe" | "all"
+
+export default function Tasks({filter: filters = "all"}) {
   const { user } = useAuth()
   const [ tasks, setTasks ] = useState<Task[]>([])
   const handleTaskFetch = async () => {
-    const ftechtasks = await axios(import.meta.env.VITE_API_URL + '/package').then(res => {
+    let ftechtasks = await axios(import.meta.env.VITE_API_URL + '/package').then(res => {
       return res.data as Task[]
     }).catch(err => {
       console.error(err)
       return []
     });
     
-    console.log(ftechtasks)
+    console.log(ftechtasks, "from tasks======", user?.id);
     ftechtasks.forEach(task => {
       task.trackingNumber = "1Z9R5W90P22" + Math.floor(Math.random() * 100000).toString()
     });
+    if(filters === "mine") ftechtasks = ftechtasks.filter(task => task.sentFromId === user?.id)
+      else if(filters === "toMe") ftechtasks = ftechtasks.filter(task => task.sentToId === user?.id)
     setTasks(ftechtasks)
   }
 

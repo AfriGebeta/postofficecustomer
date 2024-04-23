@@ -73,10 +73,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // login request logic here
     
     const res = await axios.post(import.meta.env.VITE_API_URL + "/profile/login", {
-      phone,
+      phoneNumber: phone,
       password,
     });
     if(res) {
+      console.log(res.data, "from login======");
       setPostalUser(res.data);
       //set localStorage
       localStorage.setItem("user", JSON.stringify(res.data));
