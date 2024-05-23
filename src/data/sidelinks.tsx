@@ -250,12 +250,12 @@ const customerSideLinks: SideLink[] = [
     href: '/incoming',
     icon: <IconChecklist size={18} />,
   },
-  {
-    title: 'package history',
-    label: '',
-    href: '/history',
-    icon: <IconMessages size={18} />,
-  },
+  // {
+  //   title: 'package history',
+  //   label: '',
+  //   href: '/history',
+  //   icon: <IconMessages size={18} />,
+  // },
 
   {
     title: 'send',

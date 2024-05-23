@@ -1,10 +1,17 @@
 import { Input } from '@/components/ui/input'
 import { Task } from '@/pages/tasks/data/schema';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuPortal, DropdownMenuRadioItem, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from '@/components/ui/dropdown-menu';
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from './custom/button';
 import { useNavigate } from 'react-router-dom';
+import {
+  CheckCircledIcon,
+  CircleIcon,
+  CrossCircledIcon,
+  StopwatchIcon,
+} from '@radix-ui/react-icons'
+import { useAuth } from '@/hooks/authProvider';
 
 export function Search() {
   const navigate = useNavigate()
@@ -20,6 +27,29 @@ export function Search() {
     })
     return user
   }, []);
+
+  const statuses = [
+    {
+      value: 'withuser',
+      label: 'withuser',
+      icon: StopwatchIcon,
+    },
+    {
+      value: 'pickedup',
+      label: 'Picked up',
+      icon: CircleIcon,
+    },
+    {
+      value: 'station',
+      label: 'Station',
+      icon: CrossCircledIcon,
+    },
+    {
+      value: 'delivered',
+      label: 'Delivered',
+      icon: CheckCircledIcon,
+    },
+  ]
 
   const handleTaskFetch = async () => {
     setLoading(true)
@@ -57,6 +87,15 @@ export function Search() {
     setLoading(false)
   }
 
+  const StatusIcon = ({ status }: { status: string }) => {
+    const statusObj = statuses.find(s => s.value === status)
+    if (!statusObj) {
+      return null
+    }
+    const Icon = statusObj.icon
+    return <Icon className='h-4 w-4 text-muted-foreground' />
+  }
+
   const handleSearch = (e: any) => {
     setFilter(e.target.value)
   }
@@ -65,10 +104,11 @@ export function Search() {
     handleTaskFetch()
   }, [])
 
+  const { user } = useAuth()
   return (
     <div>
       <DropdownMenu modal={false}>
-        <div className='flex flex-row gap-4'>
+        <div className='flex flex-row gap-4 o'>
           <Input
             type='search'
             placeholder='Search...'
@@ -77,24 +117,32 @@ export function Search() {
             value={filter}
           />
           <DropdownMenuTrigger>
-            <Button>Search</Button>
+            <Button>Track</Button>
           </DropdownMenuTrigger>
         </div>
-        <DropdownMenuContent className='w-[60svw] DropdownMenuContent' sideOffset={5}>
+        {/* <div className='flex flex-col items-center'> */}
+        <DropdownMenuContent className='md:w-[60svw] w-[100vw] h-[60vh] md:h-fit' sideOffset={10} align='center'>
           {
             loading ? <DropdownMenuItem><p>Loading...</p> </DropdownMenuItem> :
               tasks.filter(t => {
-                return t.trackingNumber.includes(filter)
+                return t.trackingNumber.includes(filter) && (t.sentFromId.includes(user?.firstName + "") || t.sentToId.includes(user?.firstName + ""))
               }).map((task) => (
+                <div>
                   <DropdownMenuItem key={task.trackingNumber} className='flex items-center justify-between' onClick={() => navigate("/incoming")}>
                     <div className='flex items-center'>
-                      <div className='flex flex-row justify-between items-center gap-4'>
+                      <div className='flex flex-row justify-evenly items-center gap-10'>
                         <p className='text-xs text-muted-foreground'>{task.trackingNumber}</p>
                         <p className='text-sm'>From: {task.sentFromId}</p>
                         <p className='text-sm'>To: {task.sentToId}</p>
+                        <div className='flex flex-row justify-center gap-2'>
+                          <StatusIcon status={task.status} />
+                          <p className='text-sm'>{task.status}</p>
+                          </div>
                       </div>
                     </div>
                   </DropdownMenuItem>
+                  {/* <p>me: {user?.firstName}{ user?.lastName} from:{task.sentFromId} to:{task.sentToId}</p> */}
+                </div>
               ))}
               {
                 tasks.filter(t => {
@@ -102,6 +150,8 @@ export function Search() {
                 }).length === 0 && <DropdownMenuItem><p>No results found</p></DropdownMenuItem>
               }
         </DropdownMenuContent>
+        {/* </div> */}
+        
       </DropdownMenu>
     </div>
   )

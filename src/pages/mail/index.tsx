@@ -13,7 +13,7 @@ export default function Mail() {
       {/* ===== Top Heading ===== */}
       <LayoutHeader>
         <div className='ml-auto flex items-center space-x-4'>
-          <Search />
+          {/* <Search /> */}
           <ThemeSwitch />
           <UserNav />
         </div>
@@ -26,7 +26,7 @@ export default function Mail() {
 
           <div className='flex flex-col space-y-2 text-left'>
             <p className='text-sm text-muted-foreground'>
-              Fill the form below <br />
+              Fill the form below 
               to send package
             </p>
           </div>
