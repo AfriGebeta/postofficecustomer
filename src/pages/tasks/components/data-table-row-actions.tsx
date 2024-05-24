@@ -32,7 +32,7 @@ export function DataTableRowActions<TData>({
   const [visibleStatus, setVisibleStatus] = React.useState(status)
 
   const handleStatusChange = (givenStatus: any) => {
-    const newStatus = statuses.find((status) => status.value === givenStatus.value)
+    const newStatus = statuses.find((status: { value: any }) => status.value === givenStatus.value)
     if(newStatus){
       setVisibleStatus(newStatus)
     }
@@ -88,7 +88,7 @@ export function DataTableRowActions<TData>({
     //   </DropdownMenuContent>
     // </DropdownMenu>
     <div className='flex flex-row justify-start'>
-      <status.icon className='mr-2 h-4 w-4 text-muted-foreground' />
+      <status.icon className='mr-2 h-4 w-4 text-muted-foreground' color={status.color}/>
     <p>
       {status.label}
     </p>

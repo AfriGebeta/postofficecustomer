@@ -1,10 +1,10 @@
-import React, { useState, HTMLAttributes } from 'react';
+import React, { useState, HTMLAttributes, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react';
 import axios from 'axios';
 import { z } from 'zod';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import {
@@ -57,6 +57,28 @@ const icon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
+export function SignUpForm({ className, ...props }: SignUpFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const navigate = useNavigate();
+  const { register } = useAuth();
+
+  const [branchLocations, setBranchLocations] = useState<{name: string, location: {lat: number, lng: number}}[]>([]);
+const getBranches = async () => {
+  try {
+    const res = await axios.get('https://postoffice.gebeta.app/branch');
+    console.log(res.data);
+    res.data.forEach((branch: any) => {
+      const newBranches = branchLocations;
+      newBranches.push({name: branch.name, location: {lat: branch.location.latitude, lng: branch.location.longitude}});
+      console.log({newBranches});
+      setBranchLocations(newBranches);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 function LocationMarker({ setLocation }: { setLocation: (location: { lat: number; lng: number }) => void }) {
   useMapEvents({
     click(e) {
@@ -66,11 +88,9 @@ function LocationMarker({ setLocation }: { setLocation: (location: { lat: number
   return null;
 }
 
-export function SignUpForm({ className, ...props }: SignUpFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const navigate = useNavigate();
-  const { register } = useAuth();
+useEffect(() => {
+  getBranches();
+}, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -200,6 +220,19 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 />
                 {location && <Marker position={location} icon={icon} />}
                 <LocationMarker setLocation={setLocation} />
+                {
+                  branchLocations.map((branch, index) => (
+                    <Marker key={index} position={branch.location} icon={icon}>
+                      <Popup className='flex flex-row justify-between gap-3'>
+                        <p>{branch.name}</p>
+                        <Button
+                          onClick={() => {
+                            setLocation(branch.location);
+                          }} className='mt-2' loading={isLoading}>Select</Button>
+                      </Popup>
+                    </Marker>
+                  ))
+                }
               </MapContainer>
             </div>
 

@@ -8,12 +8,12 @@ import '@/index.css'
 import { AuthProvider } from './hooks/authProvider'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <AuthProvider>
       <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
         <RouterProvider router={router} />
         <Toaster />
       </ThemeProvider>
     </AuthProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 )

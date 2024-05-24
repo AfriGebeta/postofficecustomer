@@ -79,29 +79,29 @@ export const columns: ColumnDef<Task>[] = [
   const from = getUserById(row.original.sentFromId)
   const to = getUserById(row.original.sentToId)
   */
-  {
-    accessorKey: 'priority',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Priority' />
-    ),
-    cell: ({ row }) => {
-      // get a random priority
-      const label = priorities[Math.floor(Math.random() * priorities.length)]
-      return (
-        <>
-          {label && (
-            <div className='flex flex-row'>
-              <label.icon className='mr-2 h-4 w-4 text-muted-foreground' />
-              <Badge variant='outline'>{label.label}</Badge>
-            </div>
-          )}
-        </>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-  },
+  // {
+  //   accessorKey: 'priority',
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title='Priority' />
+  //   ),
+  //   cell: ({ row }) => {
+  //     // get a random priority
+  //     const label = priorities[Math.floor(Math.random() * priorities.length)]
+  //     return (
+  //       <>
+  //         {label && (
+  //           <div className='flex flex-row'>
+  //             <label.icon className='mr-2 h-4 w-4 text-muted-foreground' />
+  //             <Badge variant='outline'>{label.label}</Badge>
+  //           </div>
+  //         )}
+  //       </>
+  //     )
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id))
+  //   },
+  // },
   {
     accessorKey: 'from',
     header: ({ column }) => (
@@ -155,7 +155,7 @@ export const columns: ColumnDef<Task>[] = [
         const to = getUserById(row.original.sentToId).then(user => {
           setTo(user)
         })
-      });
+      }, []);
 
       return (
         <div className='flex space-x-2'>

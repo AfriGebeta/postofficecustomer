@@ -12,6 +12,7 @@ import {
   StopwatchIcon,
 } from '@radix-ui/react-icons'
 import { useAuth } from '@/hooks/authProvider';
+import { color } from 'framer-motion';
 
 export function Search() {
   const navigate = useNavigate()
@@ -33,21 +34,25 @@ export function Search() {
       value: 'withuser',
       label: 'withuser',
       icon: StopwatchIcon,
+      color: 'blue',
     },
     {
       value: 'pickedup',
       label: 'Picked up',
       icon: CircleIcon,
+      color: 'grey'
     },
     {
       value: 'station',
       label: 'Station',
       icon: CrossCircledIcon,
+      color: 'red'
     },
     {
       value: 'delivered',
       label: 'Delivered',
       icon: CheckCircledIcon,
+      color: 'green'
     },
   ]
 
@@ -93,7 +98,7 @@ export function Search() {
       return null
     }
     const Icon = statusObj.icon
-    return <Icon className='h-4 w-4 text-muted-foreground' />
+    return <Icon className={`h-4 w-4 text-muted-foreground`} color={statusObj.color}/>
   }
 
   const handleSearch = (e: any) => {
