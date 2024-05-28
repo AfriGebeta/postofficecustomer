@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input'
 import { Task } from '@/pages/tasks/data/schema';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem} from '@/components/ui/dropdown-menu';
 import axios from 'axios';
-import { useEffect, useMemo, useState } from 'react';
+import { SVGProps, useEffect, useMemo, useState } from 'react';
 import { Button } from './custom/button';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -14,8 +14,7 @@ import {
 import { useAuth } from '@/hooks/authProvider';
 import { color } from 'framer-motion';
 
-export function Search() {
-  const navigate = useNavigate()
+export function Search({setTracking}: {setTracking: React.Dispatch<React.SetStateAction<Task | null>>}) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [filter, setFilter] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
@@ -133,7 +132,7 @@ export function Search() {
                 return t.trackingNumber.includes(filter) && (t.sentFromId.includes(user?.firstName + "") || t.sentToId.includes(user?.firstName + ""))
               }).map((task) => (
                 <div>
-                  <DropdownMenuItem key={task.trackingNumber} className='flex items-center justify-between' onClick={() => navigate("/incoming")}>
+                  <DropdownMenuItem key={task.trackingNumber} className='flex items-center justify-between' onClick={() => setTracking(task)}>
                     <div className='flex items-center'>
                       <div className='flex flex-row justify-evenly items-center gap-10'>
                         <p className='text-xs text-muted-foreground'>{task.trackingNumber}</p>
@@ -161,4 +160,3 @@ export function Search() {
     </div>
   )
 }
-

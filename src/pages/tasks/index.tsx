@@ -35,6 +35,7 @@ export default function Tasks({filter: filters = "all"}) {
   useEffect(() => {
     handleTaskFetch()
   }, [])
+  
   const availableTasks = tasks.filter((task) => (task.status === 'waiting' || task.status === 'en-route') || task.driverAssigned === undefined)
   return (
     <Layout>

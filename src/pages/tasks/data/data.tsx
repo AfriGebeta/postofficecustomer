@@ -34,7 +34,7 @@ export const statuses = [
     value: 'pickedup',
     label: 'Picked up',
     icon: CircleIcon,
-    color: 'grey'
+    color: 'purple'
   },
   {
     value: 'station',

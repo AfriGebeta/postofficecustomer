@@ -125,6 +125,59 @@ function WideModal({location: location, setLocation}: {location: any, setLocatio
       console.error(error);
     }
   };
+
+  function CurrentLocationButton() {
+    const map = useMap();
+
+    const handleClick = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const latlng = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.setView(latlng, 13); // Adjust zoom level as needed
+          L.marker(latlng, { icon }).addTo(map);
+          setLocation(latlng);
+        }, (error) => {
+          console.error(error);
+          toast({
+            title: 'Geolocation Error',
+            description: 'Unable to retrieve your location.',
+          });
+        });
+      } else {
+        toast({
+          title: 'Geolocation Not Supported',
+          description: 'Your browser does not support geolocation.',
+        });
+      }
+    };
+
+    useEffect(() => {
+      const control = new L.Control({ position: 'bottomright' });
+
+      control.onAdd = () => {
+        const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        const button = L.DomUtil.create('button', '', div);
+        button.innerHTML = 'Use Current Location';
+        button.style.backgroundColor = 'white';
+        button.style.border = '2px solid rgba(0,0,0,0.2)';
+        button.style.cursor = 'pointer';
+        button.style.padding = '5px';
+        button.onclick = handleClick;
+        return div;
+      };
+
+      control.addTo(map);
+
+      return () => {
+        control.remove();
+      };
+    }, [map]);
+
+    return null;
+  }
   
   function LocationMarker({ setLocation }: { setLocation: (location: { lat: number; lng: number }) => void }) {
     useMapEvents({
@@ -187,6 +240,7 @@ function WideModal({location: location, setLocation}: {location: any, setLocatio
                </Marker>
              ))
            }
+           <CurrentLocationButton />
          </MapContainer>
        </div>
        )}
@@ -215,6 +269,7 @@ const RecenterAutomatically = ({ lat, lng }:RecenterAutomaticallyProps) => {
 export default function ProfileForm() {
 
   const [location, setLocation] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
@@ -222,14 +277,14 @@ export default function ProfileForm() {
   })
 
   function onSubmit(data: ProfileFormValues) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false)
+      toast({
+        title: 'Profile updated',
+        description: 'Your profile has been updated successfully.',
+      })
+    }, 2000)
   }
 
   return (
@@ -304,7 +359,7 @@ export default function ProfileForm() {
         />
         <WideModal setLocation={setLocation} location={location}/>
 
-        <Button type='submit'>Update profile</Button>
+        <Button loading={loading} type='submit'>Update profile</Button>
       </form>
     </Form>
   )

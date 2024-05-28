@@ -74,6 +74,30 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setTime(e.target.value);
   };
 
+  const sendSms = async (phoneNumber: string, message: string) => await axios.post(import.meta.env.VITE_API_URL + `/sendsms`, {
+    //@ts-ignore
+    YOUR_RECIPIENT: phoneNumber,
+    MESSAGE: message
+}).then((response) => {
+  console.log(response)
+  if(response.data.acknowledge === 'success'){
+    toast({
+      title: 'Message sent!',
+      description: 'A message has been sent to the recipient.',
+    })
+  } else {
+    toast({
+      title: 'Message failed to send',
+      description: `'The message failed to send.': ${response.data}`,
+    })
+  }}).catch((error) => {
+    console.error(error)
+    toast({
+      title: 'Message failed to send',
+      description: `'The message failed to send.': ${error.message}`,
+    })
+    });
+
   const sendNotification = async (
     trackingNumber: string,
     packageId: string,
@@ -173,6 +197,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           setIsLoading(false);
           setRecipientName(`${data.firstName} ${data.lastName}`);
           form.reset();
+          sendSms(data.phone, `Hello ${data.firstName} ${data.lastName}, you have a package with tracking number ${trackingNumber}.`);
+          user && sendSms(user?.phone, `Hello ${user?.firstName} ${user?.lastName}, you have sent a package with tracking number ${trackingNumber}.`);
           sendNotification(trackingNumber.toString(), result.data.id, "sent");
           toast({
             title: "Package sent successfully!",
@@ -220,7 +246,28 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           width: 200,
           height: 150,
         });
+        html2canvas(document.getElementById("post-logo") as HTMLElement).then(
+          (post) => {
+        const postOffiicLogo = post.toDataURL("image/png");
+        pdf.addImage({
+          imageData: postOffiicLogo,
+          format: "PNG",
+          x: 0,
+          y: 0,
+          width: 50,
+          height: 50,
+        });
+
+      });
         // and some text like from and to
+        pdf.addImage({
+          imageData: imgData,
+          format: "PNG",
+          x: 0,
+          y: 40,
+          width: 200,
+          height: 150,
+        });
         pdf.text(`From: You`, 10, 10);
         pdf.text(`To: ${recipientName}`, 10, 20);
         pdf.text(`Tracking Number: ${trackingNumber}`, 50, 200);

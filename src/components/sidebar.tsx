@@ -50,6 +50,7 @@ export default function Sidebar2({
         >
           <div className={`flex items-center ${!isCollapsed ? 'gap-2' : ''}`}>
             <img
+            id='post-logo'
               src={postOfficeLogo}
               alt='VirtualPo'
               className={isCollapsed ? ' h-8 w-8' : 'h-16 w-16'}

@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Search } from '@/components/search'
+// import { Search } from '@/components/search'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import ThemeSwitch from '@/components/theme-switch'
 import { TopNav } from '@/components/top-nav'
@@ -22,7 +22,7 @@ export default function Dashboard() {
       <LayoutHeader>
         <TopNav links={topNav} />
         <div className='ml-auto flex items-center space-x-4'>
-          <Search />
+          {/* <Search /> */}
           <ThemeSwitch />
           <UserNav />
         </div>

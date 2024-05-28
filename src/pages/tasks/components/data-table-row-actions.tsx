@@ -23,8 +23,12 @@ export function DataTableRowActions<TData>({
   // const status = statuses.find(
   //   (status) => status.value === row.getValue('status')
   // )
+  console.log("why the diff? ---------------", row.original);
   // assign a random status to the task
-  const status = statuses[Math.floor(Math.random() * statuses.length)]
+  const status = statuses.find(
+    //@ts-ignore
+    (status) => status.value.toLowerCase() === row.original.status.toLowerCase()
+  )
 
   if (!status) {
     return null
